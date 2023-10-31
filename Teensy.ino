@@ -19,6 +19,12 @@
  *  BUTTON 6: PIN 3 HIGH
  */
 
+// Serial port communication
+#define GIVE_INPUT 'a'    // the byte signalling that the computer wants input
+#define ISSUE_COMMAND 'b' // the byte signalling that the computer issues a command
+#define SET_LED_ON 'x'
+#define SET_LED_OFF 'y'
+
 #define DEGREES_PER_PULSE 12 // Total amount of degrees per pulse (KY-040 has 30 pulses per full rotation, 360 / 30 = 12)
 #define ENCODER_PIN_A 11     // Connected to CLK on KY-040
 #define ENCODER_PIN_B 12     // Connected to DT on KY-040
@@ -48,11 +54,27 @@ void setup()
 
   // Read Pin, whatever state it's in will reflect the last position
   pinALast = digitalRead(ENCODER_PIN_A);
-  Serial.begin(9600);
+  Serial.begin(115200);
 }
 void loop()
 {
   pinA = digitalRead(ENCODER_PIN_A);
+
+  if (Serial.available())
+  {
+    char inByte = Serial.read();
+
+    if (inByte == GIVE_INPUT)
+    {
+      // pass input values to computer
+      passValuesToComputer();
+    }
+    else if (inByte == ISSUE_COMMAND)
+    {
+      // parse commands from computer
+      parseCommands();
+    } // else, ignore this byte
+  }
 
   if (pinA != pinALast)
   { // This means the knob is rotating
@@ -140,11 +162,52 @@ void button_conditional(u_int8_t pin, u_int8_t button)
   if (digitalRead(pin) == HIGH)
   {
     Joystick.button(button, true);
-    digitalWrite(LED_BUILTIN, HIGH);
   }
   else
   {
     Joystick.button(button, false);
-    digitalWrite(LED_BUILTIN, LOW);
+  }
+}
+
+void passValuesToComputer()
+{
+  // construct string from read values
+  String sOutput = "";
+
+  // add value analog A0
+  int adc0 = random(-127, 127);
+  sOutput = sOutput + adc0;
+
+  // add value analog A1
+  int adc1 = random(-127, 127);
+  sOutput = sOutput + "," + adc1;
+
+  // add value analog A2
+  int adc2 = random(-127, 127);
+  sOutput = sOutput + "," + adc2;
+
+  // add value analog A3
+  int adc3 = random(-127, 127);
+  sOutput = sOutput + "," + adc3;
+
+  Serial.println(sOutput);
+}
+
+// parse commands received from the computer
+void parseCommands()
+{
+  // read next byte as command
+  delay(1); // a small delay seems necessary to get Serial.available working again?
+  if (Serial.available())
+  {
+    char inByte = Serial.read();
+    if (inByte == 'x')
+    {
+      digitalWrite(LED_BUILTIN, HIGH); // set the LED on
+    }
+    else if (inByte == 'y')
+    {
+      digitalWrite(LED_BUILTIN, LOW); // set the LED off
+    }                                 // else, ignore this byte
   }
 }
