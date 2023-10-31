@@ -1,10 +1,10 @@
 // I use specific int sizes for better memory management
-// u_int8_t is 1 byte, u_int16_t is 2 bytes, 32 is 4 and 64 is 8
+// uint8_t is 1 byte, u_int16_t is 2 bytes, 32 is 4 and 64 is 8
 // the maximum number size scales as following, going from smallest (int8_t to int64_t):
 // 255, 65536, 4294967296, 18446744073709600000
-// [u_] means unsigned, meaning the int can't go below 0
-// for example, [int8_t] can store a value between -127 and 127, [u_int8_t] can store a value between 0 and 255.
-// the maximum value of a [u_int(x)_t] is half of the value of that of a [int(x)_t]
+// [u] means unsigned, meaning the int can't go below 0
+// for example, [int8_t] can store a value between -127 and 127, [uint8_t] can store a value between 0 and 255.
+// the maximum value of a [uint(x)_t] is half of the value of that of a [int(x)_t]
 // this is because instead of counting only positive numbers, unsigned int's also can count negative numbers so they split them in half
 // pin values have boolean values as they never have any other value than 0 or 1
 // constants are made constants to indicate that they do not change in the code, it is for readability, not performance
@@ -19,49 +19,53 @@
  *  BUTTON 6: PIN 3 HIGH
  */
 
-#define degrees_per_pulse 12;     // Total amount of degrees per pulse (KY-040 has 30 pulses per full rotation, 360 / 30 = 12)
-const u_int8_t _EncoderPinA = 11; // Connected to CLK on KY-040
-const u_int8_t _EncoderPinB = 12; // Connected to DT on KY-040
-const u_int8_t _pin0 = 0;         // Connected to pin 00, is be a button
-const u_int8_t _pin1 = 1;         // Connected to pin 01, is be a button
-const u_int8_t _pin2 = 2;         // Connected to pin 02, is be a button
-const u_int8_t _pin3 = 3;         // Connected to pin 03, is be a button
-int16_t degrees_rotated = 0;      // Counts degrees rotated (int16 because it can go from -190 to 190)
-bool pinALast;                    // Last value of pin A, needed to determine direction
-bool pinA;                        // Value of pin A, also needed to determine direction
+#define DEGREES_PER_PULSE 12 // Total amount of degrees per pulse (KY-040 has 30 pulses per full rotation, 360 / 30 = 12)
+#define ENCODER_PIN_A 11     // Connected to CLK on KY-040
+#define ENCODER_PIN_B 12     // Connected to DT on KY-040
+#define PIN_JOYSTICK_3 0     // Connected to pin 00, toggles the joystick button 3
+#define PIN_JOYSTICK_4 1     // Connected to pin 01, toggles the joystick button 4
+#define PIN_JOYSTICK_5 2     // Connected to pin 02, toggles the joystick button 5
+#define PIN_JOYSTICK_6 3     // Connected to pin 03, toggles the joystick button 6
+
+int16_t degrees_rotated = 0; // Counts degrees rotated (int16 because it can go from -190 to 190)
+bool pinALast;               // Last value of pin A, needed to determine direction
+bool pinA;                   // Value of pin A, also needed to determine direction
 
 void setup()
 {
+  // Built in LED pin
+  pinMode(LED_BUILTIN, OUTPUT);
+
   // Rotary encoder pins
-  pinMode(_EncoderPinA, INPUT);
-  pinMode(_EncoderPinB, INPUT);
+  pinMode(ENCODER_PIN_A, INPUT);
+  pinMode(ENCODER_PIN_B, INPUT);
 
   // Contact pins
-  pinMode(_pin0, INPUT_PULLDOWN);
-  pinMode(_pin1, INPUT_PULLDOWN);
-  pinMode(_pin2, INPUT_PULLDOWN);
-  pinMode(_pin3, INPUT_PULLDOWN);
+  pinMode(PIN_JOYSTICK_3, INPUT_PULLDOWN);
+  pinMode(PIN_JOYSTICK_4, INPUT_PULLDOWN);
+  pinMode(PIN_JOYSTICK_5, INPUT_PULLDOWN);
+  pinMode(PIN_JOYSTICK_6, INPUT_PULLDOWN);
 
   // Read Pin, whatever state it's in will reflect the last position
-  pinALast = digitalRead(_EncoderPinA);
+  pinALast = digitalRead(ENCODER_PIN_A);
   Serial.begin(9600);
 }
 void loop()
 {
-  pinA = digitalRead(_EncoderPinA);
+  pinA = digitalRead(ENCODER_PIN_A);
 
   if (pinA != pinALast)
   { // This means the knob is rotating
     // If the knob is rotating, we need to determine direction
     // We do that by reading pin B.
 
-    if (digitalRead(_EncoderPinB) != pinA)
+    if (digitalRead(ENCODER_PIN_B) != pinA)
     { // This means pin A Changed first - It's rotation clockwise
-      degrees_rotated += degrees_per_pulse;
+      degrees_rotated += DEGREES_PER_PULSE;
     }
     else
     { // This means pin B changed first - It's rotating counter-clockwise
-      degrees_rotated -= degrees_per_pulse;
+      degrees_rotated -= DEGREES_PER_PULSE;
     }
 
     switch (degrees_rotated)
@@ -119,10 +123,10 @@ void loop()
   // In priciple the value of pinALast and pinA are always opposite
   pinALast = pinA;
 
-  button_conditional(_pin0, 3);
-  button_conditional(_pin1, 4);
-  button_conditional(_pin2, 5);
-  button_conditional(_pin3, 6);
+  button_conditional(PIN_JOYSTICK_3, 3);
+  button_conditional(PIN_JOYSTICK_4, 4);
+  button_conditional(PIN_JOYSTICK_5, 5);
+  button_conditional(PIN_JOYSTICK_6, 6);
 }
 
 /*
@@ -136,9 +140,11 @@ void button_conditional(u_int8_t pin, u_int8_t button)
   if (digitalRead(pin) == HIGH)
   {
     Joystick.button(button, true);
+    digitalWrite(LED_BUILTIN, HIGH);
   }
   else
   {
     Joystick.button(button, false);
+    digitalWrite(LED_BUILTIN, LOW);
   }
 }
