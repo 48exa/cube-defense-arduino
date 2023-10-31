@@ -1,3 +1,5 @@
+// Teensy 3.2 used, Serial + Keyboard + Mouse + Joystick configuration
+
 #include "header.h"
 
 int16_t degrees_rotated = 0; // Counts degrees rotated (int16 because it can go from -190 to 190)
