@@ -8,14 +8,14 @@
  * distribute, sublicense, and/or sell copies of the Software, and to
  * permit persons to whom the Software is furnished to do so.
  *
- * Extra information / reasonings behind code (for those new to c++)
+ * Extra information / reasonings behind code (for those new to C++)
  *
  * I use specific int sizes for better memory management.
  * These int sizes scale as following: int8_t, int16_t, int32_t and int64_t.
  * Don't pay attention to the '_t', this is just part of the C++ type definition.
  * The number after the 'int' refers to the amount of bits it can store these
- * translate to 255 for int8_t, 65535 for int16_t, 4294967295 for int32_t and
- * 18446744073709600000 at last for int64_t. You may notice a certain pattern
+ * translate to 255 for int8_t, 65,535 for int16_t, 4,294,967,295 for int32_t and
+ * 1,844,674,4073,709,600,000 at last for int64_t. You may notice a certain pattern
  * in these numbers... they are all powers of 2. Precicely, they are all 2
  * raised to the power after the int, minus 1 (2^8 is 256, 2^16 is 65536 ect..)
  * The reason why we subtract 1, is because that number goes to the 0. Ints
@@ -49,7 +49,7 @@
  * you used it in your code. It is just a way to make your code easier
  * to read and maintain without costing any additional memory.
  *
- * Hope you had a fun read, class is dismissed
+ * Hope you had a fun read, class is dismissed.
  */
 
 #ifndef HEADER_H
@@ -57,8 +57,7 @@
 #include <Arduino.h>
 #include <usb_joystick.h>
 
-/*
- *  JOYSTICK CONFIGURATION:
+/*  JOYSTICK CONFIGURATION:
  *  BUTTON 1: ROTARY ENCODER CLOCKWISE
  *  BUTTON 2: ROTARY ENCODER COUNTER-CLOCKWISE
  *  BUTTON 3: PIN 0 HIGH
@@ -68,17 +67,16 @@
  */
 
 // defines for joystick button pins
-
 #define PIN_JOYSTICK_3 0 // Connected to pin 00, toggles the joystick button 3
 #define PIN_JOYSTICK_4 1 // Connected to pin 01, toggles the joystick button 4
 #define PIN_JOYSTICK_5 2 // Connected to pin 02, toggles the joystick button 5
 #define PIN_JOYSTICK_6 3 // Connected to pin 03, toggles the joystick button 6
 
 // defines for rotary encoder pins & constants
-#define ENCODER_PIN_A 11     // Connected to CLK on KY-040
-#define ENCODER_PIN_B 12     // Connected to DT on KY-040
-#define DEGREES_PER_PULSE 12 // Total amount of degrees per pulse (KY-040 has 30 pulses per full rotation, 360 / 30 = 12)
-#define RESET_DEGREES 180    // Total amount of degrees the rotary encoder can rotate before it resets back to 0
+#define ENCODER_PIN_A 11  // Connected to CLK on KY-040
+#define ENCODER_PIN_B 12  // Connected to DT on KY-040
+#define PULSE_INCREMENT 1 // Increment of a pulse of the KY-040
+#define RESET_PULSES 15   // Total amount of pulses the rotary encoder can rotate before it resets back to 0
 
 // defines for the serial communication
 #define GIVE_INPUT 'a'    // the byte signalling that the computer wants input
@@ -98,7 +96,7 @@ bool is_rotating(bool pin_current, bool pin_previous);
 /// @param pin_current current position of the A pin on the encoder
 /// @return `true` if clockwise, `false` if counter-clockwise
 bool clockwise(bool pin_current);
-/// @brief Handles a series of actions when the encoder has rotated a set amount of degrees (amount defined in RESET_DEGREES)
+/// @brief Handles a series of actions when the encoder has rotated a set amount of degrees (amount defined in RESET_PULSES)
 /// @param degrees Local variable that counts the current rotated degrees
 /// @return If the encoder rotated the require amount we reset `degrees` and return it. If the encoder does not sucessfully rotate
 /// the required degrees we return `degrees` without altering it

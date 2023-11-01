@@ -1,4 +1,7 @@
 // Teensy 3.2 used, Serial + Keyboard + Mouse + Joystick configuration
+#define PRODUCTION true
+
+#if PRODUCTION true
 
 #include "header.h"
 
@@ -31,11 +34,11 @@ void loop()
   {
     if (clockwise(pinA))
     { // It's rotation clockwise
-      degrees_rotated += DEGREES_PER_PULSE;
+      degrees_rotated += PULSE_INCREMENT;
     }
     else
     { // It's rotating counter-clockwise
-      degrees_rotated -= DEGREES_PER_PULSE;
+      degrees_rotated -= PULSE_INCREMENT;
     }
 
     degrees_rotated = handle_full_rotation(degrees_rotated);
@@ -51,3 +54,15 @@ void loop()
   button_conditional(PIN_JOYSTICK_5, 5);
   button_conditional(PIN_JOYSTICK_6, 6);
 }
+
+#else
+
+void setup()
+{
+}
+
+void loop()
+{
+}
+
+#endif

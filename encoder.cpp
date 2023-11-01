@@ -38,11 +38,11 @@ int16_t handle_full_rotation(int16_t degrees)
 {
   switch (degrees)
   {
-  case RESET_DEGREES: // The encoder has rotated 180 degrees clockwise
+  case RESET_PULSES: // The encoder has rotated 180 degrees clockwise
     degrees = 0;
     pulse_button(1, 100);
     break;
-  case -RESET_DEGREES: // The encoder has rotated 180 degrees counter-clockwise
+  case -RESET_PULSES: // The encoder has rotated 180 degrees counter-clockwise
     degrees = 0;
     pulse_button(2, 100);
     break;
