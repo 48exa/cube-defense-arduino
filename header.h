@@ -56,8 +56,12 @@
 #define HEADER_H
 #include <Arduino.h>
 #include <usb_joystick.h>
+#include <Wire.h>
+#include <SPI.h>
+#include <Adafruit_PN532.h>
 
-/*  JOYSTICK CONFIGURATION:
+/*
+ *  JOYSTICK BUTTON CONFIGURATION:
  *  BUTTON 1: ROTARY ENCODER CLOCKWISE
  *  BUTTON 2: ROTARY ENCODER COUNTER-CLOCKWISE
  *  BUTTON 3: PIN 0 HIGH
@@ -66,26 +70,37 @@
  *  BUTTON 6: PIN 3 HIGH
  */
 
+#define BAUD (115200) // Baud rate
+
 // defines for joystick button pins
-#define PIN_JOYSTICK_3 0 // Connected to pin 00, toggles the joystick button 3
-#define PIN_JOYSTICK_4 1 // Connected to pin 01, toggles the joystick button 4
-#define PIN_JOYSTICK_5 2 // Connected to pin 02, toggles the joystick button 5
-#define PIN_JOYSTICK_6 3 // Connected to pin 03, toggles the joystick button 6
+#define PIN_JOYSTICK_3 (0) // Connected to pin 00, toggles the joystick button 3
+#define PIN_JOYSTICK_4 (1) // Connected to pin 01, toggles the joystick button 4
+#define PIN_JOYSTICK_5 (2) // Connected to pin 02, toggles the joystick button 5
+#define PIN_JOYSTICK_6 (3) // Connected to pin 03, toggles the joystick button 6
 
 // defines for rotary encoder pins & constants
-#define ENCODER_PIN_A 11  // Connected to CLK on KY-040
-#define ENCODER_PIN_B 12  // Connected to DT on KY-040
-#define PULSE_INCREMENT 1 // Increment of a pulse of the KY-040
-#define RESET_PULSES 15   // Total amount of pulses the rotary encoder can rotate before it resets back to 0
+#define ENCODER_PIN_A (11)  // Connected to CLK on KY-040
+#define ENCODER_PIN_B (12)  // Connected to DT on KY-040
+#define PULSE_INCREMENT (1) // Increment of a pulse of the KY-040
+#define RESET_PULSES (15)   // Total amount of pulses the rotary encoder can rotate before it resets back to 0
 
 // defines for the serial communication
 #define GIVE_INPUT 'a'    // the byte signalling that the computer wants input
 #define ISSUE_COMMAND 'b' // the byte signalling that the computer issues a command
 
+// defines for I2C ports
+#define SCL0 (19) // SCL0 pin on the teensy
+#define SDA0 (18) // SDA0 pin on the teensy
+
+// ### SETUP FUNCS ### //
+
 /// @brief Sets up all the required pins for the buttons to be used as `INPUT_PULLDOWN`
 void button_setup();
 /// @brief Sets up all the pins required by the rotary encoder as `INPUT`
 void encoder_setup();
+
+// ### ROTARY ENCODER FUNCS ### //
+
 /// @brief Check if a rotary encoder in rotating by comparing the current state of a pin to the previous one.
 /// If the current pin state is a different value than the previous pin state it must mean the encoder is rotating
 /// @param pin_current Current value of the A pin on the encoder
@@ -97,10 +112,13 @@ bool is_rotating(bool pin_current, bool pin_previous);
 /// @return `true` if clockwise, `false` if counter-clockwise
 bool clockwise(bool pin_current);
 /// @brief Handles a series of actions when the encoder has rotated a set amount of degrees (amount defined in RESET_PULSES)
-/// @param degrees Local variable that counts the current rotated degrees
+/// @param degrees Pointer to local variable that counts the current rotated degrees
 /// @return If the encoder rotated the require amount we reset `degrees` and return it. If the encoder does not sucessfully rotate
 /// the required degrees we return `degrees` without altering it
-int16_t handle_full_rotation(int16_t degrees);
+void handle_full_rotation(int16_t *degrees);
+
+// ### SERIAL COMMUNICATION FUNCS ### //
+
 /// @brief Collect data from a series of (analog) pins and print them to the serial port to be detected by other programs
 void passValuesToComputer();
 /// @brief Read the serial port and if the data matches certain criteria do something (defined in function)
@@ -110,7 +128,38 @@ void handle_command();
 /// @brief Pulse a `Joystick.button` for a certain amount of time in milliseconds
 /// @param button The `Joystick.button` to pulse
 /// @param millis Amount of miliseconds before turning the `button` off again
+
+// ### TEENSY JOYSTICK HELPER FUNCTIONS FUNCS ### //
+
 void pulse_button(int8_t button, int32_t millis);
 void button_conditional(u_int8_t pin, u_int8_t button);
+
+// ### NFC CARD FUNCS ### //
+
+/// @brief Check if the NFC board has valid PN53x firmware
+/// @param nfc PN532 NFC class
+void checkBoardFirmware(Adafruit_PN532 nfc);
+/// @brief Print the info from the firmware on a PN53x board
+/// @param nfc PN532 NFC class
+void printBoardInfo(Adafruit_PN532 nfc);
+/// @deprecated Print the data from a NFC card
+/// @param uid empty array to buffer the returned UID
+/// @param uidLength empty int to store the length of the  UID
+/// @param nfc PN532 NFC class
+/// @deprecated
+void printCardInfo(uint8_t *uid, uint8_t uidLength, Adafruit_PN532 nfc);
+/// @brief Check if an NFC card is found
+/// @param nfc PN532 NFC class
+/// @return True if an NFC card is found, false if not
+bool nfcCardFound(Adafruit_PN532 nfc);
+/// @deprecated Loop over all the pages of the NFC card and print all the data stored on it.
+/// @param data int array of size 32
+/// @param nfc PN532 NFC class
+void printNfcData(uint8_t data[], Adafruit_PN532 nfc);
+/// @deprecated Prompt to read another card and hold the serial port until the user has sent a byte
+void resetReadAgain();
+/// @brief Looks for a NFC card and prints the UID when it discovers one
+/// @param nfc PN532 NFC class
+void lookForNfc(Adafruit_PN532 nfc);
 
 #endif

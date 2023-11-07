@@ -34,16 +34,16 @@ bool clockwise(bool pin_current)
   }
 }
 
-int16_t handle_full_rotation(int16_t degrees)
+void handle_full_rotation(int16_t *degrees)
 {
-  switch (degrees)
+  switch (*degrees)
   {
   case RESET_PULSES: // The encoder has rotated 180 degrees clockwise
-    degrees = 0;
+    *degrees = 0; // This isn't legal
     pulse_button(1, 100);
     break;
   case -RESET_PULSES: // The encoder has rotated 180 degrees counter-clockwise
-    degrees = 0;
+    *degrees = 0; // This isn't legal
     pulse_button(2, 100);
     break;
   default: // Nothing happened so we do nothing
@@ -51,6 +51,5 @@ int16_t handle_full_rotation(int16_t degrees)
   }
 
   Serial.print("Encoder Position (deg): ");
-  Serial.println(degrees);
-  return degrees;
+  Serial.println(*degrees);
 }
