@@ -71,6 +71,7 @@
  */
 
 #define BAUD (115200) // Baud rate
+#define ESCAPE_CHARACTER (254) // int value of the \n escape character
 
 // defines for joystick button pins
 #define PIN_JOYSTICK_3 (0) // Connected to pin 00, toggles the joystick button 3
