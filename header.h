@@ -56,9 +56,6 @@
 #define HEADER_H
 #include <Arduino.h>
 #include <usb_joystick.h>
-#include <Wire.h>
-#include <SPI.h>
-#include <Adafruit_PN532.h>
 
 /*
  *  JOYSTICK BUTTON CONFIGURATION:
@@ -71,7 +68,6 @@
  */
 
 #define BAUD (115200) // Baud rate
-#define ESCAPE_CHARACTER (254) // int value of the \n escape character
 
 // defines for joystick button pins
 #define PIN_JOYSTICK_3 (0) // Connected to pin 00, toggles the joystick button 3
@@ -134,33 +130,5 @@ void handle_command();
 
 void pulse_button(int8_t button, int32_t millis);
 void button_conditional(u_int8_t pin, u_int8_t button);
-
-// ### NFC CARD FUNCS ### //
-
-/// @brief Check if the NFC board has valid PN53x firmware
-/// @param nfc PN532 NFC class
-void checkBoardFirmware(Adafruit_PN532 nfc);
-/// @brief Print the info from the firmware on a PN53x board
-/// @param nfc PN532 NFC class
-void printBoardInfo(Adafruit_PN532 nfc);
-/// @deprecated Print the data from a NFC card
-/// @param uid empty array to buffer the returned UID
-/// @param uidLength empty int to store the length of the  UID
-/// @param nfc PN532 NFC class
-/// @deprecated
-void printCardInfo(uint8_t *uid, uint8_t uidLength, Adafruit_PN532 nfc);
-/// @brief Check if an NFC card is found
-/// @param nfc PN532 NFC class
-/// @return True if an NFC card is found, false if not
-bool nfcCardFound(Adafruit_PN532 nfc);
-/// @deprecated Loop over all the pages of the NFC card and print all the data stored on it.
-/// @param data int array of size 32
-/// @param nfc PN532 NFC class
-void printNfcData(uint8_t data[], Adafruit_PN532 nfc);
-/// @deprecated Prompt to read another card and hold the serial port until the user has sent a byte
-void resetReadAgain();
-/// @brief Looks for a NFC card and prints the UID when it discovers one
-/// @param nfc PN532 NFC class
-void lookForNfc(Adafruit_PN532 nfc);
 
 #endif
