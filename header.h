@@ -114,18 +114,6 @@ bool clockwise(bool pin_current);
 /// the required degrees we return `degrees` without altering it
 void handle_full_rotation(int16_t *degrees);
 
-// ### SERIAL COMMUNICATION FUNCS ### //
-
-/// @brief Collect data from a series of (analog) pins and print them to the serial port to be detected by other programs
-void passValuesToComputer();
-/// @brief Read the serial port and if the data matches certain criteria do something (defined in function)
-void parseCommands();
-/// @brief Read the serial port to check if a certain 'key' of data is sent and handle them accordingly
-void handle_command();
-/// @brief Pulse a `Joystick.button` for a certain amount of time in milliseconds
-/// @param button The `Joystick.button` to pulse
-/// @param millis Amount of miliseconds before turning the `button` off again
-
 // ### TEENSY JOYSTICK HELPER FUNCTIONS FUNCS ### //
 
 void pulse_button(int8_t button, int32_t millis);

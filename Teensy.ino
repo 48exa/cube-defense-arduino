@@ -27,11 +27,6 @@ void loop()
 {
   pinA = digitalRead(ENCODER_PIN_A);
 
-  if (Serial.available())
-  {
-    handle_command();
-  }
-
   if (is_rotating(pinA, pinALast))
   {
     if (clockwise(pinA))
@@ -61,10 +56,15 @@ void loop()
 
 void setup()
 {
+  pinMode(A0, INPUT);
+  Serial.begin(300);
 }
 
 void loop()
 {
+  int val = analogRead(A0);
+  Serial.println(val);
+  delay(100);
 }
 
 #endif
